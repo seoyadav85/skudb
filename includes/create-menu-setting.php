@@ -19,8 +19,8 @@ function Skudb_Menu_init_Callback(){ ?>
   <button class="tablinks" onclick="openCity(event, 'api_key')">Api Details</button>
   <button class="tablinks" onclick="openCity(event, 'pr_cateory')">Product Category</button>
   <button class="tablinks" onclick="openCity(event, 'pay_setting')">Payment Seetings</button>
+  <button class="tablinks" onclick="openCity(event, 'Project_history')">Project History</button>
 </div>
-
 <div id="api_key" class="tabcontent">
   <form method="post" action="<?php echo admin_url( 'admin-post.php'); ?>">
 
@@ -151,7 +151,52 @@ $big = 999999999; // need an unlikely integer
 </div>
 
 </div>
+<div id="Project_history" class="tabcontent">
+  <button class="btn btn-primary mt-10" style="float: right; margin: 15px;"> Refersh</button>
+  <P style="float: left; margin: 15px;"> Total Point:- 
+  <?php 
+  $user_id = get_current_user_id(); 
+  $userPoint = get_user_meta($user_id, 'latest_Reward_Point', true);
+  echo $result = $userPoint ?: 0;
 
+?> </p>
+  <table class="product_cat" id="">
+    <tr>
+      <th>#</th>
+      <th>Product Id</th>
+      <th>Product Name</th>      
+    </tr>
+   <?php 
+   $count =1; 
+   $args = array(
+    'post_type'=>'product', // Your post type name
+    'posts_per_page' => 3,    
+    'order' => 'ASC',
+    'paged' => get_query_var('paged') ? get_query_var('paged') : 1,);
+    $loop = new WP_Query( $args );
+    if ( $loop->have_posts() ) {
+    while ( $loop->have_posts() ) : $loop->the_post();?>
+     <tr>
+      <th><?php echo $count;?></th>
+      <th><?php echo get_the_id();?></th>
+      <th><?php echo get_the_title();?></th>           
+    </tr> 
+  <?php $count++; endwhile;  
+  wp_reset_postdata(); ?>  
+  </table>
+  <div class="row">
+  <div class="pagination">
+<?php
+echo "<div class='fz-pagination'>" . paginate_links(array(
+    'total' => $loop->max_num_pages,
+    'prev_text' => __('<div class="preious-page">Prev</div>'),
+    'next_text' => __('<div class="next-page">Next</div>')
+)) . "</div>";
+}
+?>
+</div>
+</div>
+</div>
 <div id="pay_setting" class="tabcontent">
   <table class="product_cat" id="settingstable">
     <tr>
@@ -161,10 +206,8 @@ $big = 999999999; // need an unlikely integer
       <th>Update Category Product Points %</th> 
       <th>Action</th>     
     </tr>
-
     <?php 
-
-  $terms  = get_terms( ['taxonomy' => 'product_cat','parent' =>0, 'hide_empty' => false] );
+    $terms  = get_terms( ['taxonomy' => 'product_cat','parent' =>0, 'hide_empty' => false] );
     if($terms ){
     $rcount =1;
     foreach($terms  as $tname){
@@ -199,11 +242,9 @@ $big = 999999999; // need an unlikely integer
 <img  style="display: none; text-align: center;" id="sloading-image" src="<?php echo SK_DB_PLUGIN_URL ?>/assets/img/LoaderIcon.gif"/>
   <div id="spleasewait" style="display:none;">Please wait...</div>
 </div>
+<?php } ?>
 
 <?php
-
-}
-
 function totalpages($tproduct){
 $toproduct = $tproduct/10;
 if($toproduct <= 1){
@@ -214,4 +255,20 @@ $toproduct = 1;
  $toproduct = intval($tproduct/10);
 }
 return $toproduct;
+}
+
+function pagination_bar( $query_wp ) 
+{
+$pages = $query_wp->max_num_pages;
+$big = 999999999; // need an unlikely integer
+if ($pages > 1)
+{
+    $page_current = max(1, get_query_var('page'));
+    echo paginate_links(array(
+        'base' => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+        'format' => '?paged=%#%',
+        'current' => $page_current,
+        'total' => $pages,
+    ));
+}
 }

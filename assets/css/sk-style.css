@@ -110,3 +110,20 @@ padding: 5px 10px;
 border-radius: 5px;
 border: 1px solid #ddd; /* Gray */
 }
+
+#Project_history .next-page {
+    display: inline-block;
+}
+
+#Project_history span.page-numbers.current {
+    background: #337ab7;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    color: #fff;
+}
+
+#Project_history .pagination {    
+    padding-left: 20px;
+    
+}

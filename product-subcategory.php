@@ -1,6 +1,4 @@
 <?php 
-// product subcategory import 
-
 //subcategory
 function Skudb_insert_Subcategory($catid) {
    // Get the saved application info
